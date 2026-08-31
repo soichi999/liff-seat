@@ -93,22 +93,19 @@
       color: var(--muted);
       margin: 0 0 1.8rem;
     }
-    button.primary {
+    a.primary {
       display: block;
-      width: 100%;
-      border: none;
       background: var(--line-green);
       color: #fff;
       font-size: 1rem;
       font-weight: 600;
-      font-family: inherit;
+      text-decoration: none;
       padding: 1rem 1.2rem;
       border-radius: 12px;
       box-shadow: 0 3px 10px rgba(6, 199, 85, 0.25);
       transition: transform 0.15s ease, box-shadow 0.15s ease;
-      cursor: pointer;
     }
-    button.primary:active {
+    a.primary:active {
       transform: translateY(1px);
       box-shadow: 0 1px 5px rgba(6, 199, 85, 0.2);
     }
@@ -199,18 +196,20 @@
             show(
               '<div class="bubble">LINE友だち追加で特典あり！</div>' +
               '<h1>友だち追加でおトクに</h1>' +
-              '<p class="lead">クーポンや最新情報をLINEでお届けします。<br>友だち追加後、ブラウザに注文ページが開きます。</p>' +
-              '<button class="primary" id="addFriendBtn">友だち追加して注文に進む</button>' +
+              '<p class="lead">クーポンや最新情報をLINEでお届けします。<br>追加後、もう一度QRコードをお読み取りください。</p>' +
+              '<a class="primary" href="' + ADD_FRIEND_URL + '">友だち追加して注文に進む</a>' +
               '<a class="secondary" href="' + orderUrl + '">友だち追加せずに注文に進む</a>'
             );
 
-            document.getElementById('addFriendBtn').addEventListener('click', function () {
-              // ① 先に注文ページを外部ブラウザで開いておく
-              liff.openWindow({ url: orderUrl, external: true });
-              // ② 少し遅らせて友だち追加画面へ
-              setTimeout(function () {
-                window.location.href = ADD_FRIEND_URL;
-              }, 600);
+            // 画面に戻ってきた場合は自動で進む（対応端末のみ）
+            document.addEventListener('visibilitychange', function () {
+              if (document.visibilityState !== 'visible') return;
+              liff.getFriendship().then(function (f2) {
+                if (f2.friendFlag) {
+                  showLoading('ありがとうございます。ご注文ページへ移動します…');
+                  window.location.href = orderUrl;
+                }
+              }).catch(function () {});
             });
           });
         });
