@@ -93,19 +93,22 @@
       color: var(--muted);
       margin: 0 0 1.8rem;
     }
-    a.primary {
+    button.primary {
       display: block;
+      width: 100%;
+      border: none;
       background: var(--line-green);
       color: #fff;
       font-size: 1rem;
       font-weight: 600;
-      text-decoration: none;
+      font-family: inherit;
       padding: 1rem 1.2rem;
       border-radius: 12px;
       box-shadow: 0 3px 10px rgba(6, 199, 85, 0.25);
       transition: transform 0.15s ease, box-shadow 0.15s ease;
+      cursor: pointer;
     }
-    a.primary:active {
+    button.primary:active {
       transform: translateY(1px);
       box-shadow: 0 1px 5px rgba(6, 199, 85, 0.2);
     }
@@ -166,24 +169,6 @@
       show('<p class="error">' + message + (detail ? '<code>' + detail + '</code>' : '') + '</p>');
     }
 
-    function renderInvite(orderUrl) {
-      show(
-        '<div class="bubble">LINE友だち追加で特典あり！</div>' +
-        '<h1>友だち追加でおトクに</h1>' +
-        '<p class="lead">クーポンや最新情報をLINEでお届けします。</p>' +
-        '<a class="primary" href="' + ADD_FRIEND_URL + '">友だち追加して注文に進む</a>' +
-        '<a class="secondary" href="' + orderUrl + '">友だち追加せずに注文に進む</a>'
-      );
-    }
-
-    function renderReturned(orderUrl) {
-      show(
-        '<h1>ありがとうございます</h1>' +
-        '<p class="lead">下のボタンからご注文にお進みください。</p>' +
-        '<a class="primary" href="' + orderUrl + '">注文に進む</a>'
-      );
-    }
-
     liff.init({ liffId: LIFF_ID }).then(function () {
       var params = new URLSearchParams(location.search);
       var seat = params.get('seat') || '';
@@ -211,19 +196,21 @@
               return;
             }
 
-            renderInvite(orderUrl);
+            show(
+              '<div class="bubble">LINE友だち追加で特典あり！</div>' +
+              '<h1>友だち追加でおトクに</h1>' +
+              '<p class="lead">クーポンや最新情報をLINEでお届けします。<br>友だち追加後、ブラウザに注文ページが開きます。</p>' +
+              '<button class="primary" id="addFriendBtn">友だち追加して注文に進む</button>' +
+              '<a class="secondary" href="' + orderUrl + '">友だち追加せずに注文に進む</a>'
+            );
 
-            // 友だち追加から戻ってきたとき
-            document.addEventListener('visibilitychange', function () {
-              if (document.visibilityState !== 'visible') return;
-
-              liff.getFriendship().then(function (f2) {
-                if (f2.friendFlag) {
-                  // 自動遷移を試みる（ブロックされた場合に備えてボタンも出す）
-                  renderReturned(orderUrl);
-                  window.location.href = orderUrl;
-                }
-              }).catch(function () { /* 再チェック失敗時は画面をそのまま維持 */ });
+            document.getElementById('addFriendBtn').addEventListener('click', function () {
+              // ① 先に注文ページを外部ブラウザで開いておく
+              liff.openWindow({ url: orderUrl, external: true });
+              // ② 少し遅らせて友だち追加画面へ
+              setTimeout(function () {
+                window.location.href = ADD_FRIEND_URL;
+              }, 600);
             });
           });
         });
