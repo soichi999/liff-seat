@@ -5,13 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>座席注文</title>
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 2rem 1rem; }
-    a.btn {
-      display: inline-block; margin-top: 1rem; padding: 0.8rem 1.5rem;
-      border-radius: 8px; text-decoration: none; font-weight: bold;
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 2rem 1.2rem;
+      color: #333;
     }
-    .add-friend { background: #06C755; color: white; }
-    .go-order { background: #eee; color: #333; margin-top: 0.5rem; }
+    #status {
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+    a.btn {
+      display: block;
+      text-decoration: none;
+      border-radius: 10px;
+      margin: 0 auto;
+    }
+    .add-friend {
+      background: #06C755;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.05rem;
+      padding: 1rem 1.5rem;
+      max-width: 320px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .go-order {
+      color: #999;
+      font-size: 0.85rem;
+      padding: 0.7rem;
+      margin-top: 1.2rem;
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -55,10 +81,10 @@
               statusEl.textContent = '注文サイトへ移動します…';
               window.location.href = orderUrl;
             } else {
-              statusEl.textContent = 'ご注文の前に、公式アカウントの友だち追加をお願いします';
+              statusEl.textContent = 'お得な情報をお届けします。\n友だち追加してご注文へお進みください。';
               document.getElementById('content').innerHTML =
-                '<a class="btn add-friend" href="' + ADD_FRIEND_URL + '">友だち追加する</a><br>' +
-                '<a class="btn go-order" href="' + orderUrl + '">追加せずに注文サイトへ進む</a>';
+                '<a class="btn add-friend" href="' + ADD_FRIEND_URL + '">友だち追加して注文に進む</a>' +
+                '<a class="btn go-order" href="' + orderUrl + '">友だち追加せずに注文に進む</a>';
 
               // 友だち追加から戻ってきたら再チェックして自動遷移
               document.addEventListener('visibilitychange', function () {
