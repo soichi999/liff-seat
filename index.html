@@ -10,16 +10,18 @@
       --text: #2b2b2b;
       --muted: #9aa0a6;
       --bg: #ffffff;
-      --card: #ffffff;
       --border: #ececec;
+      --bubble-bg: #FFF6E0;
+      --bubble-text: #8a6d1f;
     }
     @media (prefers-color-scheme: dark) {
       :root {
         --text: #ededed;
         --muted: #8b9096;
         --bg: #1a1a1a;
-        --card: #232323;
         --border: #333;
+        --bubble-bg: #3a3220;
+        --bubble-text: #f0d98a;
       }
     }
     * { box-sizing: border-box; }
@@ -51,6 +53,34 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     .hidden { display: none; }
+
+    .bubble {
+      position: relative;
+      display: inline-block;
+      background: var(--bubble-bg);
+      color: var(--bubble-text);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.6rem 1.1rem;
+      border-radius: 999px;
+      margin-bottom: 1.4rem;
+      animation: pop 0.4s ease;
+    }
+    .bubble::after {
+      content: "";
+      position: absolute;
+      bottom: -7px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid var(--bubble-bg);
+    }
+    @keyframes pop {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     h1 {
       font-size: 1.15rem;
       font-weight: 600;
@@ -118,6 +148,7 @@
 
     var loadingEl = document.getElementById('loading');
     var contentEl = document.getElementById('content');
+    var loadingTextEl = document.getElementById('loading-text');
 
     function show(html) {
       loadingEl.classList.add('hidden');
@@ -125,11 +156,31 @@
       contentEl.innerHTML = html;
     }
 
+    function showLoading(text) {
+      contentEl.classList.add('hidden');
+      loadingEl.classList.remove('hidden');
+      loadingTextEl.textContent = text;
+    }
+
     function showError(message, detail) {
+      show('<p class="error">' + message + (detail ? '<code>' + detail + '</code>' : '') + '</p>');
+    }
+
+    function renderInvite(orderUrl) {
       show(
-        '<p class="error">' + message +
-        (detail ? '<code>' + detail + '</code>' : '') +
-        '</p>'
+        '<div class="bubble">LINE友だち追加で特典あり！</div>' +
+        '<h1>友だち追加でおトクに</h1>' +
+        '<p class="lead">クーポンや最新情報をLINEでお届けします。</p>' +
+        '<a class="primary" href="' + ADD_FRIEND_URL + '">友だち追加して注文に進む</a>' +
+        '<a class="secondary" href="' + orderUrl + '">友だち追加せずに注文に進む</a>'
+      );
+    }
+
+    function renderReturned(orderUrl) {
+      show(
+        '<h1>ありがとうございます</h1>' +
+        '<p class="lead">下のボタンからご注文にお進みください。</p>' +
+        '<a class="primary" href="' + orderUrl + '">注文に進む</a>'
       );
     }
 
@@ -155,28 +206,24 @@
 
           return liff.getFriendship().then(function (friendship) {
             if (friendship.friendFlag) {
-              document.getElementById('loading-text').textContent = 'ご注文ページへ移動します…';
+              showLoading('ご注文ページへ移動します…');
               window.location.href = orderUrl;
               return;
             }
 
-            show(
-              '<h1>友だち追加でおトクに</h1>' +
-              '<p class="lead">クーポンや最新情報をLINEでお届けします。</p>' +
-              '<a class="primary" href="' + ADD_FRIEND_URL + '">友だち追加して注文に進む</a>' +
-              '<a class="secondary" href="' + orderUrl + '">友だち追加せずに注文に進む</a>'
-            );
+            renderInvite(orderUrl);
 
+            // 友だち追加から戻ってきたとき
             document.addEventListener('visibilitychange', function () {
               if (document.visibilityState !== 'visible') return;
+
               liff.getFriendship().then(function (f2) {
                 if (f2.friendFlag) {
-                  loadingEl.classList.remove('hidden');
-                  contentEl.classList.add('hidden');
-                  document.getElementById('loading-text').textContent = 'ありがとうございます。ご注文ページへ移動します…';
+                  // 自動遷移を試みる（ブロックされた場合に備えてボタンも出す）
+                  renderReturned(orderUrl);
                   window.location.href = orderUrl;
                 }
-              });
+              }).catch(function () { /* 再チェック失敗時は画面をそのまま維持 */ });
             });
           });
         });
