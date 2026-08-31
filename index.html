@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>座席注文</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 2rem 1rem; }
+    a.btn {
+      display: inline-block; margin-top: 1rem; padding: 0.8rem 1.5rem;
+      border-radius: 8px; text-decoration: none; font-weight: bold;
+    }
+    .add-friend { background: #06C755; color: white; }
+    .go-order { background: #eee; color: #333; margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <p id="status">確認中です…</p>
+  <div id="content"></div>
+
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/versions/2.26.1/sdk.js"></script>
+  <script>
+    const LIFF_ID = '2011234867-hoIMCFuA';
+    const ADD_FRIEND_URL = 'https://line.me/R/ti/p/@251wgwtq';
+    const LOOKUP_API = 'https://script.google.com/macros/s/AKfycby-A8FU2kQbCLLbgzBaBhdfz80S_9Bkirgj2rDhe5kvGo8AJysrIxs6wmcRqLil7GE/exec';
+
+    const statusEl = document.getElementById('status');
+    statusEl.textContent = 'JS開始OK';
+
+    liff.init({ liffId: LIFF_ID }).then(function () {
+      statusEl.textContent = 'LIFF init OK';
+
+      var params = new URLSearchParams(location.search);
+      var seat = params.get('seat') || '';
+      statusEl.textContent = 'seat=' + seat;
+
+      if (!liff.isLoggedIn()) { liff.login(); return; }
+
+      if (!seat) {
+        statusEl.textContent = '座席情報が見つかりません（URLにseatパラメータがありません）';
+        return;
+      }
+
+      fetch(LOOKUP_API + '?action=lookup&seat=' + encodeURIComponent(seat))
+        .then(function (res) { return res.json(); })
+        .then(function (result) {
+          var orderUrl = result.orderUrl;
+          if (!orderUrl) {
+            statusEl.textContent = '座席情報が見つかりません（seat=' + seat + '）';
+            return;
+          }
+
+          liff.getFriendship().then(function (friendship) {
+            if (friendship.friendFlag) {
+              statusEl.textContent = '注文サイトへ移動します…';
+              window.location.href = orderUrl;
+            } else {
+              statusEl.textContent = 'ご注文の前に、公式アカウントの友だち追加をお願いします';
+              document.getElementById('content').innerHTML =
+                '<a class="btn add-friend" href="' + ADD_FRIEND_URL + '" target="_blank">友だち追加する</a><br>' +
+                '<a class="btn go-order" href="' + orderUrl + '">追加後、注文サイトへ進む</a>';
+            }
+          }).catch(function (err) {
+            statusEl.textContent = 'friendshipエラー: ' + err.message;
+          });
+        }).catch(function (err) {
+          statusEl.textContent = 'lookupエラー: ' + err.message;
+        });
+    }).catch(function (err) {
+      statusEl.textContent = 'initエラー: ' + err.message;
+    });
+  </script>
+</body>
+</html>
