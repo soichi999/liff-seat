@@ -3,109 +3,185 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>座席注文</title>
+  <title>ご注文</title>
   <style>
+    :root {
+      --line-green: #06C755;
+      --text: #2b2b2b;
+      --muted: #9aa0a6;
+      --bg: #ffffff;
+      --card: #ffffff;
+      --border: #ececec;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --text: #ededed;
+        --muted: #8b9096;
+        --bg: #1a1a1a;
+        --card: #232323;
+        --border: #333;
+      }
+    }
+    * { box-sizing: border-box; }
     body {
-      font-family: sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .card {
+      width: 100%;
+      max-width: 400px;
+      padding: 2.5rem 1.5rem;
       text-align: center;
-      padding: 2rem 1.2rem;
-      color: #333;
     }
-    #status {
-      font-size: 1rem;
+    .spinner {
+      width: 34px;
+      height: 34px;
+      margin: 0 auto 1.2rem;
+      border: 3px solid var(--border);
+      border-top-color: var(--line-green);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .hidden { display: none; }
+    h1 {
+      font-size: 1.15rem;
+      font-weight: 600;
       line-height: 1.6;
-      margin-bottom: 1.5rem;
+      margin: 0 0 0.6rem;
     }
-    a.btn {
+    p.lead {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--muted);
+      margin: 0 0 1.8rem;
+    }
+    a.primary {
       display: block;
-      text-decoration: none;
-      border-radius: 10px;
-      margin: 0 auto;
-    }
-    .add-friend {
-      background: #06C755;
+      background: var(--line-green);
       color: #fff;
-      font-weight: bold;
-      font-size: 1.05rem;
-      padding: 1rem 1.5rem;
-      max-width: 320px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 1rem 1.2rem;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(6, 199, 85, 0.25);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-    .go-order {
-      color: #999;
-      font-size: 0.85rem;
-      padding: 0.7rem;
-      margin-top: 1.2rem;
+    a.primary:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 5px rgba(6, 199, 85, 0.2);
+    }
+    a.secondary {
+      display: inline-block;
+      margin-top: 1.4rem;
+      color: var(--muted);
+      font-size: 0.8rem;
       text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .error {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .error code {
+      display: block;
+      margin-top: 0.8rem;
+      font-size: 0.72rem;
+      opacity: 0.6;
+      word-break: break-all;
     }
   </style>
 </head>
 <body>
-  <p id="status">確認中です…</p>
-  <div id="content"></div>
+  <div class="card">
+    <div id="loading">
+      <div class="spinner"></div>
+      <p class="lead" id="loading-text">少々お待ちください…</p>
+    </div>
+    <div id="content" class="hidden"></div>
+  </div>
 
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/versions/2.26.1/sdk.js"></script>
   <script>
-    const LIFF_ID = '2011234867-hoIMCFuA';
-    const ADD_FRIEND_URL = 'https://line.me/R/ti/p/@251wgwtq';
-    const LOOKUP_API = 'https://script.google.com/macros/s/AKfycby-A8FU2kQbCLLbgzBaBhdfz80S_9Bkirgj2rDhe5kvGo8AJysrIxs6wmcRqLil7GE/exec';
+    var LIFF_ID = '2011234867-hoIMCFuA';
+    var ADD_FRIEND_URL = 'https://line.me/R/ti/p/@251wgwtq';
+    var LOOKUP_API = 'https://script.google.com/macros/s/AKfycby-A8FU2kQbCLLbgzBaBhdfz80S_9Bkirgj2rDhe5kvGo8AJysrIxs6wmcRqLil7GE/exec';
 
-    const statusEl = document.getElementById('status');
-    statusEl.textContent = 'JS開始OK';
+    var loadingEl = document.getElementById('loading');
+    var contentEl = document.getElementById('content');
+
+    function show(html) {
+      loadingEl.classList.add('hidden');
+      contentEl.classList.remove('hidden');
+      contentEl.innerHTML = html;
+    }
+
+    function showError(message, detail) {
+      show(
+        '<p class="error">' + message +
+        (detail ? '<code>' + detail + '</code>' : '') +
+        '</p>'
+      );
+    }
 
     liff.init({ liffId: LIFF_ID }).then(function () {
-      statusEl.textContent = 'LIFF init OK';
-
       var params = new URLSearchParams(location.search);
       var seat = params.get('seat') || '';
-      statusEl.textContent = 'seat=' + seat;
 
       if (!liff.isLoggedIn()) { liff.login(); return; }
 
       if (!seat) {
-        statusEl.textContent = '座席情報が見つかりません（URLにseatパラメータがありません）';
+        showError('座席情報を読み取れませんでした。<br>お手数ですが、テーブルのQRコードをもう一度お読み取りください。');
         return;
       }
 
-      fetch(LOOKUP_API + '?action=lookup&seat=' + encodeURIComponent(seat))
+      return fetch(LOOKUP_API + '?action=lookup&seat=' + encodeURIComponent(seat))
         .then(function (res) { return res.json(); })
         .then(function (result) {
           var orderUrl = result.orderUrl;
           if (!orderUrl) {
-            statusEl.textContent = '座席情報が見つかりません（seat=' + seat + '）';
+            showError('座席情報が見つかりませんでした。<br>お手数ですが、店員までお声がけください。', 'seat: ' + seat);
             return;
           }
 
-          liff.getFriendship().then(function (friendship) {
+          return liff.getFriendship().then(function (friendship) {
             if (friendship.friendFlag) {
-              statusEl.textContent = '注文サイトへ移動します…';
+              document.getElementById('loading-text').textContent = 'ご注文ページへ移動します…';
               window.location.href = orderUrl;
-            } else {
-              statusEl.textContent = 'お得な情報をお届けします。\n友だち追加してご注文へお進みください。';
-              document.getElementById('content').innerHTML =
-                '<a class="btn add-friend" href="' + ADD_FRIEND_URL + '">友だち追加して注文に進む</a>' +
-                '<a class="btn go-order" href="' + orderUrl + '">友だち追加せずに注文に進む</a>';
+              return;
+            }
 
-              // 友だち追加から戻ってきたら再チェックして自動遷移
-              document.addEventListener('visibilitychange', function () {
-                if (document.visibilityState === 'visible') {
-                  liff.getFriendship().then(function (f2) {
-                    if (f2.friendFlag) {
-                      statusEl.textContent = '友だち追加ありがとうございます。注文サイトへ移動します…';
-                      window.location.href = orderUrl;
-                    }
-                  });
+            show(
+              '<h1>友だち追加でおトクに</h1>' +
+              '<p class="lead">クーポンや最新情報をLINEでお届けします。</p>' +
+              '<a class="primary" href="' + ADD_FRIEND_URL + '">友だち追加して注文に進む</a>' +
+              '<a class="secondary" href="' + orderUrl + '">友だち追加せずに注文に進む</a>'
+            );
+
+            document.addEventListener('visibilitychange', function () {
+              if (document.visibilityState !== 'visible') return;
+              liff.getFriendship().then(function (f2) {
+                if (f2.friendFlag) {
+                  loadingEl.classList.remove('hidden');
+                  contentEl.classList.add('hidden');
+                  document.getElementById('loading-text').textContent = 'ありがとうございます。ご注文ページへ移動します…';
+                  window.location.href = orderUrl;
                 }
               });
-            }
-          }).catch(function (err) {
-            statusEl.textContent = 'friendshipエラー: ' + err.message;
+            });
           });
-        }).catch(function (err) {
-          statusEl.textContent = 'lookupエラー: ' + err.message;
         });
     }).catch(function (err) {
-      statusEl.textContent = 'initエラー: ' + err.message;
+      showError('ただいま接続できませんでした。<br>時間をおいて、もう一度お試しください。', err && err.message);
     });
   </script>
 </body>
