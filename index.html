@@ -57,8 +57,20 @@
             } else {
               statusEl.textContent = 'ご注文の前に、公式アカウントの友だち追加をお願いします';
               document.getElementById('content').innerHTML =
-                '<a class="btn add-friend" href="' + ADD_FRIEND_URL + '" target="_blank">友だち追加する</a><br>' +
-                '<a class="btn go-order" href="' + orderUrl + '">追加後、注文サイトへ進む</a>';
+                '<a class="btn add-friend" href="' + ADD_FRIEND_URL + '">友だち追加する</a><br>' +
+                '<a class="btn go-order" href="' + orderUrl + '">追加せずに注文サイトへ進む</a>';
+
+              // 友だち追加から戻ってきたら再チェックして自動遷移
+              document.addEventListener('visibilitychange', function () {
+                if (document.visibilityState === 'visible') {
+                  liff.getFriendship().then(function (f2) {
+                    if (f2.friendFlag) {
+                      statusEl.textContent = '友だち追加ありがとうございます。注文サイトへ移動します…';
+                      window.location.href = orderUrl;
+                    }
+                  });
+                }
+              });
             }
           }).catch(function (err) {
             statusEl.textContent = 'friendshipエラー: ' + err.message;
