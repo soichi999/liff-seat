@@ -205,7 +205,7 @@
             );
 
             document.getElementById('addFriendBtn').addEventListener('click', function () {
-              if (typeof liff.requestFriendShip === 'function') {
+
                 // LIFF内で友だち追加ダイアログを表示し、処理をJSに戻す
                 showLoading('友だち追加を確認しています…');
                 liff.requestFriendShip().then(function () {
@@ -216,13 +216,13 @@
                 }).catch(function (err) {
                   showError('友だち追加でエラーが発生しました。', err && err.message);
                 });
-              } else {
-                // requestFriendShip が存在しない場合は従来方式
+
+                /* requestFriendShip が存在しない場合は従来方式
                 liff.openWindow({ url: orderUrl, external: true });
                 setTimeout(function () {
                   window.location.href = ADD_FRIEND_URL;
                 }, 600);
-              }
+                */
             });
           });
         });
