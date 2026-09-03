@@ -205,10 +205,9 @@
             );
 
             document.getElementById('addFriendBtn').addEventListener('click', function () {
-
-                // LIFF内で友だち追加ダイアログを表示し、処理をJSに戻す
-                showLoading('友だち追加を確認しています…');
-                liff.requestFriendShip().then(function () {
+              showLoading('友だち追加を確認しています…');
+              try {
+                liff.requestFriendship().then(function () {
                   return liff.getFriendship();
                 }).then(function (f2) {
                   showLoading('ご注文ページへ移動します…');
@@ -216,6 +215,10 @@
                 }).catch(function (err) {
                   showError('友だち追加でエラーが発生しました。', err && err.message);
                 });
+              } catch (e) {
+                showError('メソッド呼び出しエラー', e.message);
+              }
+            });
 
                 /* requestFriendShip が存在しない場合は従来方式
                 liff.openWindow({ url: orderUrl, external: true });
