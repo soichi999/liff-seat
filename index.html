@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ご注文</title>
+  <title>ご来店ありがとうございました</title>
   <style>
     :root {
       --line-green: #06C755;
@@ -11,8 +11,6 @@
       --muted: #9aa0a6;
       --bg: #ffffff;
       --border: #ececec;
-      --bubble-bg: #FFF6E0;
-      --bubble-text: #8a6d1f;
     }
     @media (prefers-color-scheme: dark) {
       :root {
@@ -20,8 +18,6 @@
         --muted: #8b9096;
         --bg: #1a1a1a;
         --border: #333;
-        --bubble-bg: #3a3220;
-        --bubble-text: #f0d98a;
       }
     }
     * { box-sizing: border-box; }
@@ -53,95 +49,24 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     .hidden { display: none; }
-
-    .bubble {
-      position: relative;
-      display: inline-block;
-      background: var(--bubble-bg);
-      color: var(--bubble-text);
-      font-size: 0.85rem;
-      font-weight: 600;
-      padding: 0.6rem 1.1rem;
-      border-radius: 999px;
-      margin-bottom: 1.4rem;
-      animation: pop 0.4s ease;
-    }
-    .bubble::after {
-      content: "";
-      position: absolute;
-      bottom: -7px;
-      left: 50%;
-      transform: translateX(-50%);
-      border-left: 8px solid transparent;
-      border-right: 8px solid transparent;
-      border-top: 8px solid var(--bubble-bg);
-    }
-    @keyframes pop {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .icon {
-      font-size: 2.6rem;
-      margin-bottom: 0.6rem;
-    }
-    h1 {
-      font-size: 1.15rem;
-      font-weight: 600;
-      line-height: 1.6;
-      margin: 0 0 0.6rem;
-    }
-    p.lead {
-      font-size: 0.9rem;
-      line-height: 1.7;
-      color: var(--muted);
-      margin: 0 0 1.8rem;
-    }
+    .icon { font-size: 2.6rem; margin-bottom: 0.6rem; }
+    h1 { font-size: 1.15rem; font-weight: 600; line-height: 1.6; margin: 0 0 0.6rem; }
+    p.lead { font-size: 0.9rem; line-height: 1.7; color: var(--muted); margin: 0 0 1.8rem; }
     button.primary {
-      display: block;
-      width: 100%;
-      border: none;
-      background: var(--line-green);
-      color: #fff;
-      font-size: 1rem;
-      font-weight: 600;
-      font-family: inherit;
-      padding: 1rem 1.2rem;
-      border-radius: 12px;
+      display: block; width: 100%; border: none;
+      background: var(--line-green); color: #fff;
+      font-size: 1rem; font-weight: 600; font-family: inherit;
+      padding: 1rem 1.2rem; border-radius: 12px;
       box-shadow: 0 3px 10px rgba(6, 199, 85, 0.25);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
       cursor: pointer;
     }
-    button.primary:active {
-      transform: translateY(1px);
-      box-shadow: 0 1px 5px rgba(6, 199, 85, 0.2);
-    }
     a.secondary {
-      display: inline-block;
-      margin-top: 1.4rem;
-      color: var(--muted);
-      font-size: 0.8rem;
-      text-decoration: underline;
-      text-underline-offset: 3px;
+      display: inline-block; margin-top: 1.4rem;
+      color: var(--muted); font-size: 0.8rem;
+      text-decoration: underline; text-underline-offset: 3px;
     }
-    .note {
-      font-size: 0.75rem;
-      color: var(--muted);
-      line-height: 1.6;
-      margin-top: 1rem;
-    }
-    .error {
-      font-size: 0.85rem;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-    .error code {
-      display: block;
-      margin-top: 0.8rem;
-      font-size: 0.72rem;
-      opacity: 0.6;
-      word-break: break-all;
-    }
+    .note { font-size: 0.75rem; color: var(--muted); line-height: 1.6; margin-top: 1rem; }
+    .error { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
   </style>
 </head>
 <body>
@@ -155,43 +80,29 @@
 
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
-    var LIFF_ID = '2011234867-hoIMCFuA';
-    var ADD_FRIEND_URL = 'https://line.me/R/ti/p/@251wgwtq';
-    var LOOKUP_API = 'https://script.google.com/macros/s/AKfycby-A8FU2kQbCLLbgzBaBhdfz80S_9Bkirgj2rDhe5kvGo8AJysrIxs6wmcRqLil7GE/exec';
-
+    var LIFF_ID = 'ここに新しいLIFF IDを入れる';
     var SHOPCARD_URL = 'https://liff.line.me/1654883656-XqwKRkd4/accounts/251wgwtq/shopcards/01M1BEWTZY31SD0G5K1V7FKHV7';
     var GOOGLE_REVIEW_URL = 'https://g.page/r/CQsxuHz764MAEAE/review';
 
     var loadingEl = document.getElementById('loading');
     var contentEl = document.getElementById('content');
-    var loadingTextEl = document.getElementById('loading-text');
 
     function show(html) {
       loadingEl.classList.add('hidden');
       contentEl.classList.remove('hidden');
       contentEl.innerHTML = html;
     }
-
     function showLoading(text) {
       contentEl.classList.add('hidden');
       loadingEl.classList.remove('hidden');
-      loadingTextEl.textContent = text;
+      document.getElementById('loading-text').textContent = text;
+    }
+    function showError(message) {
+      show('<p class="error">' + message + '</p>');
     }
 
-    function showError(message, detail) {
-      show('<p class="error">' + message + (detail ? '<code>' + detail + '</code>' : '') + '</p>');
-    }
-
-    function isReady(url) {
-      return /^https?:\/\//.test(url);
-    }
-
-    // ───────── 退店モード ─────────
-    function runExitMode() {
-      if (!isReady(SHOPCARD_URL) || !isReady(GOOGLE_REVIEW_URL)) {
-        showError('ただいま準備中です。<br>お手数ですが、店員までお声がけください。');
-        return;
-      }
+    liff.init({ liffId: LIFF_ID }).then(function () {
+      if (!liff.isLoggedIn()) { liff.login(); return; }
 
       show(
         '<div class="icon">🎉</div>' +
@@ -209,71 +120,8 @@
           window.location.href = SHOPCARD_URL;
         }, 600);
       });
-    }
-
-    // ───────── 注文モード（座席QR） ─────────
-    function runOrderMode(seat) {
-      if (!seat) {
-        showError('座席情報を読み取れませんでした。<br>お手数ですが、テーブルのQRコードをもう一度お読み取りください。');
-        return;
-      }
-
-      return fetch(LOOKUP_API + '?action=lookup&seat=' + encodeURIComponent(seat))
-        .then(function (res) { return res.json(); })
-        .then(function (result) {
-          var orderUrl = result.orderUrl;
-          if (!orderUrl) {
-            showError('座席情報が見つかりませんでした。<br>お手数ですが、店員までお声がけください。', 'seat: ' + seat);
-            return;
-          }
-
-          return liff.getFriendship().then(function (friendship) {
-            if (friendship.friendFlag) {
-              showLoading('ご注文ページへ移動します…');
-              window.location.href = orderUrl;
-              return;
-            }
-
-            show(
-              '<div class="bubble">LINE友だち追加で特典あり！</div>' +
-              '<h1>友だち追加でおトクに</h1>' +
-              '<p class="lead">クーポンや最新情報をLINEでお届けします。</p>' +
-              '<button class="primary" id="addFriendBtn">友だち追加して注文に進む</button>' +
-              '<a class="secondary" href="' + orderUrl + '">友だち追加せずに注文に進む</a>'
-            );
-
-            document.getElementById('addFriendBtn').addEventListener('click', function () {
-              showLoading('友だち追加を確認しています…');
-              try {
-                liff.requestFriendship().then(function () {
-                  showLoading('ご注文ページへ移動します…');
-                  window.location.href = orderUrl;
-                }).catch(function (err) {
-                  showError('友だち追加でエラーが発生しました。', err && err.message);
-                });
-              } catch (e) {
-                showError('メソッド呼び出しエラー', e.message);
-              }
-            });
-          });
-        });
-    }
-
-    // ───────── 起動 ─────────
-    liff.init({ liffId: LIFF_ID }).then(function () {
-      if (!liff.isLoggedIn()) { liff.login(); return; }
-
-      var params = new URLSearchParams(location.search);
-      var mode = params.get('mode') || '';
-      var seat = params.get('seat') || '';
-
-      if (mode === 'exit') {
-        runExitMode();
-      } else {
-        return runOrderMode(seat);
-      }
     }).catch(function (err) {
-      showError('ただいま接続できませんでした。<br>時間をおいて、もう一度お試しください。', err && err.message);
+      showError('ただいま接続できませんでした。<br>時間をおいて、もう一度お試しください。');
     });
   </script>
 </body>
