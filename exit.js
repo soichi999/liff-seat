@@ -1,5 +1,5 @@
 var LIFF_ID = '2011234867-hoIMCFuA';
-var SHOPCARD_URL = 'https://liff.line.me/1654883656-XqwKRkd4/accounts/251wgwtq/shopcards/01M1BEWTZY31SD0G5K1V7FKHV7';
+var SHOPCARD_URL = 'https://u.lin.ee/s6BUlBd';
 var GOOGLE_REVIEW_URL = 'https://g.page/r/CQsxuHz764MAEAE/review';
 
 document.body.innerHTML =
