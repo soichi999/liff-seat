@@ -81,6 +81,10 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    .icon {
+      font-size: 2.6rem;
+      margin-bottom: 0.6rem;
+    }
     h1 {
       font-size: 1.15rem;
       font-weight: 600;
@@ -120,6 +124,12 @@
       text-decoration: underline;
       text-underline-offset: 3px;
     }
+    .note {
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 1rem;
+    }
     .error {
       font-size: 0.85rem;
       color: var(--muted);
@@ -149,6 +159,9 @@
     var ADD_FRIEND_URL = 'https://line.me/R/ti/p/@251wgwtq';
     var LOOKUP_API = 'https://script.google.com/macros/s/AKfycby-A8FU2kQbCLLbgzBaBhdfz80S_9Bkirgj2rDhe5kvGo8AJysrIxs6wmcRqLil7GE/exec';
 
+    var SHOPCARD_URL = 'https://liff.line.me/1654883656-XqwKRkd4/accounts/251wgwtq/shopcards/01M1BEWTZY31SD0G5K1V7FKHV7';
+    var GOOGLE_REVIEW_URL = 'https://g.page/r/CQsxuHz764MAEAE/review';
+
     var loadingEl = document.getElementById('loading');
     var contentEl = document.getElementById('content');
     var loadingTextEl = document.getElementById('loading-text');
@@ -169,12 +182,37 @@
       show('<p class="error">' + message + (detail ? '<code>' + detail + '</code>' : '') + '</p>');
     }
 
-    liff.init({ liffId: LIFF_ID }).then(function () {
-      var params = new URLSearchParams(location.search);
-      var seat = params.get('seat') || '';
+    function isReady(url) {
+      return /^https?:\/\//.test(url);
+    }
 
-      if (!liff.isLoggedIn()) { liff.login(); return; }
+    // ───────── 退店モード ─────────
+    function runExitMode() {
+      if (!isReady(SHOPCARD_URL) || !isReady(GOOGLE_REVIEW_URL)) {
+        showError('ただいま準備中です。<br>お手数ですが、店員までお声がけください。');
+        return;
+      }
 
+      show(
+        '<div class="icon">🎉</div>' +
+        '<h1>ご来店ありがとうございました</h1>' +
+        '<p class="lead">来店スタンプをお受け取りください。</p>' +
+        '<button class="primary" id="stampBtn">スタンプを受け取る</button>' +
+        '<p class="note">スタンプ受け取り後、ブラウザに口コミページが開きます。<br>よろしければ感想をお聞かせください（任意です）。</p>' +
+        '<a class="secondary" href="' + GOOGLE_REVIEW_URL + '" target="_blank">口コミだけ書く</a>'
+      );
+
+      document.getElementById('stampBtn').addEventListener('click', function () {
+        showLoading('スタンプ画面を開いています…');
+        liff.openWindow({ url: GOOGLE_REVIEW_URL, external: true });
+        setTimeout(function () {
+          window.location.href = SHOPCARD_URL;
+        }, 600);
+      });
+    }
+
+    // ───────── 注文モード（座席QR） ─────────
+    function runOrderMode(seat) {
       if (!seat) {
         showError('座席情報を読み取れませんでした。<br>お手数ですが、テーブルのQRコードをもう一度お読み取りください。');
         return;
@@ -208,8 +246,6 @@
               showLoading('友だち追加を確認しています…');
               try {
                 liff.requestFriendship().then(function () {
-                  return liff.getFriendship();
-                }).then(function (f2) {
                   showLoading('ご注文ページへ移動します…');
                   window.location.href = orderUrl;
                 }).catch(function (err) {
@@ -221,6 +257,21 @@
             });
           });
         });
+    }
+
+    // ───────── 起動 ─────────
+    liff.init({ liffId: LIFF_ID }).then(function () {
+      if (!liff.isLoggedIn()) { liff.login(); return; }
+
+      var params = new URLSearchParams(location.search);
+      var mode = params.get('mode') || '';
+      var seat = params.get('seat') || '';
+
+      if (mode === 'exit') {
+        runExitMode();
+      } else {
+        return runOrderMode(seat);
+      }
     }).catch(function (err) {
       showError('ただいま接続できませんでした。<br>時間をおいて、もう一度お試しください。', err && err.message);
     });
