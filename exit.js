@@ -32,9 +32,10 @@ liff.init({ liffId: LIFF_ID }).then(function () {
   if (!liff.isLoggedIn()) { liff.login(); return; }
 
   show(
-    '<div class="icon">🎉</div>' +
+    '<div class="eyebrow">来店スタンプ</div>' +
+    '<div class="rule"></div>' +
     '<h1>ご来店ありがとうございました</h1>' +
-    '<p class="lead">来店スタンプをお受け取りください。</p>' +
+    '<p class="lead">下のボタンからスタンプをお受け取りください。</p>' +
     '<button class="primary" id="stampBtn">スタンプを受け取る</button>' +
     '<p class="note">スタンプ受け取り後、ブラウザに口コミページが開きます。<br>よろしければ感想をお聞かせください（任意です）。</p>' +
     '<a class="secondary" href="' + GOOGLE_REVIEW_URL + '" target="_blank">口コミだけ書く</a>'

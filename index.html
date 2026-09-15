@@ -6,22 +6,27 @@
   <title>ご注文</title>
   <style>
     :root {
-      --line-green: #06C755;
-      --text: #2b2b2b;
-      --muted: #9aa0a6;
       --bg: #ffffff;
-      --border: #ececec;
-      --bubble-bg: #FFF6E0;
-      --bubble-text: #8a6d1f;
+      --bg-alt: #f2f7f3;
+      --text: #3a4440;
+      --text-h: #142018;
+      --text-dim: #7d8a84;
+      --border: #dfe9e2;
+      --accent: #0a8f4c;
+      --accent-dim: #e1f5e8;
+      --card-bg: #ffffff;
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --text: #ededed;
-        --muted: #8b9096;
-        --bg: #1a1a1a;
-        --border: #333;
-        --bubble-bg: #3a3220;
-        --bubble-text: #f0d98a;
+        --bg: #14181a;
+        --bg-alt: #1c2320;
+        --text: #d8ded9;
+        --text-h: #f2f5f2;
+        --text-dim: #8b9490;
+        --border: #2b332e;
+        --accent: #26c47a;
+        --accent-dim: #163627;
+        --card-bg: #1c2320;
       }
     }
     * { box-sizing: border-box; }
@@ -38,106 +43,106 @@
     }
     .card {
       width: 100%;
-      max-width: 400px;
-      padding: 2.5rem 1.5rem;
+      max-width: 420px;
+      padding: 3rem 1.75rem;
       text-align: center;
+      background: var(--card-bg);
     }
     .spinner {
-      width: 34px;
-      height: 34px;
+      width: 32px;
+      height: 32px;
       margin: 0 auto 1.2rem;
-      border: 3px solid var(--border);
-      border-top-color: var(--line-green);
+      border: 2.5px solid var(--border);
+      border-top-color: var(--accent);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     .hidden { display: none; }
 
-    .bubble {
-      position: relative;
+    .eyebrow {
       display: inline-block;
-      background: var(--bubble-bg);
-      color: var(--bubble-text);
-      font-size: 0.85rem;
+      font-size: 0.72rem;
       font-weight: 600;
-      padding: 0.6rem 1.1rem;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      background: var(--accent-dim);
+      padding: 0.4rem 0.9rem;
       border-radius: 999px;
-      margin-bottom: 1.4rem;
-      animation: pop 0.4s ease;
+      margin-bottom: 1.3rem;
+      animation: fadeUp 0.4s ease;
     }
-    .bubble::after {
-      content: "";
-      position: absolute;
-      bottom: -7px;
-      left: 50%;
-      transform: translateX(-50%);
-      border-left: 8px solid transparent;
-      border-right: 8px solid transparent;
-      border-top: 8px solid var(--bubble-bg);
-    }
-    @keyframes pop {
+    @keyframes fadeUp {
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .icon {
-      font-size: 2.6rem;
-      margin-bottom: 0.6rem;
+    .rule {
+      width: 36px;
+      height: 2px;
+      background: var(--accent);
+      margin: 0 auto 1.1rem;
     }
+
     h1 {
-      font-size: 1.15rem;
-      font-weight: 600;
-      line-height: 1.6;
-      margin: 0 0 0.6rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-h);
+      line-height: 1.5;
+      margin: 0 0 0.7rem;
+      letter-spacing: 0.01em;
     }
     p.lead {
-      font-size: 0.9rem;
-      line-height: 1.7;
-      color: var(--muted);
-      margin: 0 0 1.8rem;
+      font-size: 0.92rem;
+      line-height: 1.85;
+      color: var(--text-dim);
+      margin: 0 0 2rem;
     }
-    button.primary {
+    button.primary,
+    a.primary {
       display: block;
       width: 100%;
       border: none;
-      background: var(--line-green);
+      background: var(--accent);
       color: #fff;
-      font-size: 1rem;
+      font-size: 0.98rem;
       font-weight: 600;
       font-family: inherit;
+      text-decoration: none;
       padding: 1rem 1.2rem;
-      border-radius: 12px;
-      box-shadow: 0 3px 10px rgba(6, 199, 85, 0.25);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      border-radius: 8px;
+      letter-spacing: 0.02em;
+      transition: opacity 0.15s ease, transform 0.15s ease;
       cursor: pointer;
     }
-    button.primary:active {
+    button.primary:active,
+    a.primary:active {
       transform: translateY(1px);
-      box-shadow: 0 1px 5px rgba(6, 199, 85, 0.2);
+      opacity: 0.9;
     }
     a.secondary {
       display: inline-block;
-      margin-top: 1.4rem;
-      color: var(--muted);
+      margin-top: 1.6rem;
+      color: var(--text-dim);
       font-size: 0.8rem;
-      text-decoration: underline;
-      text-underline-offset: 3px;
+      text-decoration: none;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 2px;
     }
     .note {
-      font-size: 0.75rem;
-      color: var(--muted);
-      line-height: 1.6;
-      margin-top: 1rem;
+      font-size: 0.76rem;
+      color: var(--text-dim);
+      line-height: 1.8;
+      margin-top: 1.4rem;
     }
     .error {
-      font-size: 0.85rem;
-      color: var(--muted);
-      line-height: 1.7;
+      font-size: 0.88rem;
+      color: var(--text-dim);
+      line-height: 1.8;
     }
     .error code {
       display: block;
-      margin-top: 0.8rem;
+      margin-top: 0.9rem;
       font-size: 0.72rem;
       opacity: 0.6;
       word-break: break-all;
