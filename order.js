@@ -58,7 +58,6 @@ liff.init({ liffId: LIFF_ID }).then(function () {
 
         show(
           '<div class="eyebrow">友だち追加特典</div>' +
-          '<div class="rule"></div>' +
           '<h1>友だち追加でおトクに</h1>' +
           '<p class="lead">クーポンや最新情報をLINEでお届けします。</p>' +
           '<button class="primary" id="addFriendBtn">友だち追加して注文に進む</button>' +

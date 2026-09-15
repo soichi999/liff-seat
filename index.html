@@ -77,13 +77,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .rule {
-      width: 36px;
-      height: 2px;
-      background: var(--accent);
-      margin: 0 auto 1.1rem;
-    }
-
     h1 {
       font-size: 1.3rem;
       font-weight: 700;
@@ -97,6 +90,44 @@
       line-height: 1.85;
       color: var(--text-dim);
       margin: 0 0 2rem;
+    }
+    .bubble {
+      position: relative;
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.2rem 1.3rem 1rem;
+      margin-bottom: 1.9rem;
+    }
+    .bubble h1,
+    .bubble p.lead {
+      margin: 0;
+    }
+    .bubble h1 {
+      margin-bottom: 0.5rem;
+    }
+    .bubble::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: -9px;
+      width: 18px;
+      height: 18px;
+      background: var(--bg-alt);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      transform: translateX(-50%) rotate(45deg);
+      border-bottom-right-radius: 3px;
+    }
+    .note-box {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      margin-top: 1.4rem;
+    }
+    .note-box .note {
+      margin: 0;
     }
     button.primary,
     a.primary {

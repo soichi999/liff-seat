@@ -33,11 +33,14 @@ liff.init({ liffId: LIFF_ID }).then(function () {
 
   show(
     '<div class="eyebrow">来店スタンプ</div>' +
-    '<div class="rule"></div>' +
-    '<h1>ご来店ありがとうございました</h1>' +
-    '<p class="lead">下のボタンからスタンプをお受け取りください。</p>' +
+    '<div class="bubble">' +
+      '<h1>ご来店ありがとうございました</h1>' +
+      '<p class="lead">下のボタンからスタンプをお受け取りください。</p>' +
+    '</div>' +
     '<button class="primary" id="stampBtn">スタンプを受け取る</button>' +
-    '<p class="note">スタンプ受け取り後、ブラウザに口コミページが開きます。<br>よろしければ感想をお聞かせください（任意です）。</p>' +
+    '<div class="note-box">' +
+      '<p class="note">スタンプ受け取り後、ブラウザに口コミページが開きます。<br>よろしければ感想をお聞かせください（任意です）。</p>' +
+    '</div>' +
     '<a class="secondary" href="' + GOOGLE_REVIEW_URL + '" target="_blank">口コミだけ書く</a>'
   );
 
