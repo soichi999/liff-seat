@@ -32,7 +32,6 @@ liff.init({ liffId: LIFF_ID }).then(function () {
   if (!liff.isLoggedIn()) { liff.login(); return; }
 
   show(
-    '<div class="eyebrow">来店スタンプ</div>' +
     '<div class="bubble">' +
       '<h1>ご来店ありがとうございました</h1>' +
       '<p class="lead">下のボタンからスタンプをお受け取りください。</p>' +
